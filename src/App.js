@@ -1,25 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './Home';
+import UserList from './UserList';
+import PostList from './PostList';
+import Timeline from './Timeline';
+// import ClientEdit from "./ClientEdit";
 
 function App() {
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      <Router>
+        <Routes>
+          <Route path='/' exact={true} element={<Timeline/>}/>
+          <Route path='/home' exact={true} element={<Home/>}/>
+          <Route path='/manager/users' exact={true} element={<UserList/>}/>
+          <Route path='/manager/posts' exact={true} element={<PostList/>}/>
+          {/* <Route path='/clients/:id' component={ClientEdit}/> */}
+        </Routes>
+      </Router>
+  )
 }
 
 export default App;
