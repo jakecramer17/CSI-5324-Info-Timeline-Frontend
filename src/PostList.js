@@ -13,14 +13,13 @@ function PostList() {
 
     useEffect(() => {
         // TODO: Fetch endpoint needs to point to our timeline backend endpoint
-        fetch('/manager/items')
+        fetch('/api/posts')
             .then(response => response.json())
             .then(data => setPosts(data));
     }, []);
 
     const remove = async (id) => {
-        // TODO: Fetch endpoint needs to point to our timeline backend endpoint
-        await fetch(`/manager/items/${id}`, {
+        await fetch(`/api/posts/remove/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -31,6 +30,26 @@ function PostList() {
             setPosts(updatedPosts);
         });
     }
+
+    const create = async () => {
+        await fetch(`/api/posts/create`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                    "title": "Test",
+                    "desciption": "test post",
+                    "tags": [{"tag": "test tag"}]
+                })
+        })
+        .then(response => response.json())
+        .then((data) => {
+            let updatedPosts = [...posts, data]
+            setPosts(updatedPosts)
+        });
+    }
     
 
     if (isLoading) {
@@ -39,8 +58,8 @@ function PostList() {
 
     const postList = posts.map(post => {
         return <tr key={post.id}>
-            <td style={{whiteSpace: 'nowrap'}}>{post.name}</td>
-            <td>{post.name}</td>
+            <td style={{whiteSpace: 'nowrap'}}>{post.title}</td>
+            <td>{post.desciption}</td>
             <td>
                 <ButtonGroup>
                     <Button size="sm" color="primary" tag={Link} to={"/manager/items/" + post.id}>Edit</Button>
@@ -55,13 +74,13 @@ function PostList() {
             <AppNavbar/>
             <Container fluid>
                 <div className="float-right">
-                    <Button color="success" tag={Link} to="/manager/items/new">Add Post</Button>
+                    <Button color="success" onClick={() => create()}>Add Post</Button>
                 </div>
                 <h3>Posts</h3>
                 <Table className="mt-4">
                     <thead>
                     <tr>
-                        <th width="30%">Name</th>
+                        <th width="30%">Title</th>
                         <th width="30%">Description</th>
                         <th width="40%">Actions</th>
                     </tr>

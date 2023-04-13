@@ -13,14 +13,14 @@ function UserList() {
 
     useEffect(() => {
         // TODO: Fetch endpoint needs to point to our timeline backend endpoint
-        fetch('/manager/items')
+        fetch('/api/users')
             .then(response => response.json())
             .then(data => setUsers(data));
     }, []);
 
     const remove = async (id) => {
         // TODO: Fetch endpoint needs to point to our timeline backend endpoint
-        await fetch(`/manager/items/${id}`, {
+        await fetch(`/api/users/remove/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -32,6 +32,27 @@ function UserList() {
         });
     }
     
+    const create = async () => {
+        await fetch(`/api/users/create`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                    "firstName": "Jake",
+                    "lastName": "Cramer",
+                    "email": "jake.cramer@baylor.edu",
+                    "password": "password"
+                })
+        })
+        .then(response => response.json())
+        .then((data) => {
+            let updatedUsers = [...users, data]
+            setUsers(updatedUsers)
+        });
+    }
+
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -39,8 +60,8 @@ function UserList() {
 
     const userList = users.map(user => {
         return <tr key={user.id}>
-            <td style={{whiteSpace: 'nowrap'}}>{user.name}</td>
-            <td>{user.name}</td>
+            <td style={{whiteSpace: 'nowrap'}}>{user.firstName}</td>
+            <td>{user.email}</td>
             <td>
                 <ButtonGroup>
                     <Button size="sm" color="primary" tag={Link} to={"/manager/items/" + user.id}>Edit</Button>
@@ -55,7 +76,7 @@ function UserList() {
             <AppNavbar/>
             <Container fluid>
                 <div className="float-right">
-                    <Button color="success" tag={Link} to="/manager/items/new">Add User</Button>
+                    <Button color="success" onClick={() => create()}>Add User</Button>
                 </div>
                 <h3>Users</h3>
                 <Table className="mt-4">
