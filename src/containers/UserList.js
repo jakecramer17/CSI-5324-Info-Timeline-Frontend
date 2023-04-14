@@ -63,10 +63,7 @@ function UserList() {
             <td style={{whiteSpace: 'nowrap'}}>{user.firstName}</td>
             <td>{user.email}</td>
             <td>
-                <ButtonGroup>
-                    <Button size="sm" color="primary" tag={Link} to={"/manager/items/" + user.id}>Edit</Button>
-                    <Button size="sm" color="danger" onClick={() => remove(user.id)}>Delete</Button>
-                </ButtonGroup>
+                <Button size="sm" color="primary">Send Message</Button>
             </td>
         </tr>
     });
@@ -75,10 +72,10 @@ function UserList() {
         <div>
             <AppNavbar/>
             <Container fluid>
+                <h3>Account Management</h3>
                 <div className="float-right">
-                    <Button color="success" onClick={() => create()}>Add User</Button>
+                    <Button color="success" tag={Link} to="/manager/users/create">Create Account</Button>
                 </div>
-                <h3>Users</h3>
                 <Table className="mt-4">
                     <thead>
                     <tr>

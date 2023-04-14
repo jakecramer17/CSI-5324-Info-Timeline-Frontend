@@ -1,0 +1,10 @@
+login {
+    margin: auto;
+    width: 50%;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
