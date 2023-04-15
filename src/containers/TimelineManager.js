@@ -6,16 +6,19 @@ import { Link } from 'react-router-dom';
 /**
  * Basic page for fetching, displaying, and deleting posts.
  */
-function PostManager() {
+function TimelineManager() {
 
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        // TODO: Fetch endpoint needs to point to our timeline backend endpoint
-        fetch('/api/posts')
+        fetch('/api/posts/status/ACCEPTED')
             .then(response => response.json())
-            .then(data => setPosts(data));
+            .then(data => {
+                let updatedPosts = [...posts, ...data];
+                setPosts(updatedPosts);
+                console.log("All posts: " + data);
+            });
     }, []);
 
     const remove = async (id) => {
@@ -74,16 +77,16 @@ function PostManager() {
 
     return (
         <div>
-            <AppNavbar/>
+            <AppNavbar isLoggedIn={true}/>
             <Container fluid>
-                <h3>Post Management</h3>
+                <h3>Timeline Management</h3>
                 {/* <div className="float-right">
                     <Button color="success" tag={Link} to="/manager/posts/create">Create Post</Button>
                 </div> */}
                 <Table className="mt-4">
                     <thead>
                     <tr>
-                        <th width="10%">Title</th>
+                        <th width="10%">Post</th>
                         <th width="40%">Description</th>
                         <th width="10%">Type</th>
                         <th width="10%">Status</th>
@@ -99,4 +102,4 @@ function PostManager() {
     );
 }
 
-export default PostManager;
+export default TimelineManager;

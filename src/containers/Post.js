@@ -10,13 +10,15 @@ function Post(props) {
 
   useEffect(() => {
     setImageSrc(props.src);
+    setHeader(props.header);
+    setSubHeader(props.subheader);
   }, []);
 
   return (
     <article className={styles.article}>
       <img className={styles.image} src={imageSrc} alt="background" />
-      <h1 className={styles.header}>React Is Awesome</h1>
-      <h1 className={styles.subheader}>Description of Post</h1>
+      <h1 className={styles.header}>{header}</h1>
+      <h1 className={styles.subheader}>{subHeader}</h1>
     </article>
   );
 };

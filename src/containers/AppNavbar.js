@@ -12,6 +12,10 @@ function AppNavbar(props) {
         setIsOpen(!isOpen);
     }
 
+    const logout = () => {
+        localStorage.clear();
+    }
+
     return ( 
         <Navbar className="color-nav" dark expand="md">
             <div>
@@ -19,7 +23,7 @@ function AppNavbar(props) {
                 <NavbarBrand tag={Link} to="/home">Home</NavbarBrand>
             </div>
             {props.isLoggedIn 
-            ? <NavbarBrand tag={Link} to="/login">Logout</NavbarBrand> 
+            ? <NavbarBrand onClick={logout} tag={Link} to="/login">Logout</NavbarBrand> 
             : null}
 \       </Navbar>
     );

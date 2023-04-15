@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar.js';
 import { Link } from 'react-router-dom';
+import fetcher from './../helpers/fetcher.js'
 
 /**
  * Basic page for fetching, displaying, and deleting posts.
@@ -13,41 +14,40 @@ function ReviewList() {
 
     useEffect(() => {
         // TODO: Fetch endpoint needs to point to our timeline backend endpoint
-        fetch('/api/posts')
+        fetch('/api/posts/status/SUBMITTED')
             .then(response => response.json())
-            .then(data => setPosts(data));
+            .then(data => {
+                let updatedPosts = [...posts, ...data];
+                setPosts(updatedPosts);
+                console.log("All posts: " + data);
+            });
     }, []);
 
-    const remove = async (id) => {
-        await fetch(`/api/posts/remove/${id}`, {
-            method: 'DELETE',
+    const approvePost = async (id) => {
+        await fetcher(`/api/posts/update/${id}/ACCEPTED`, {
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            }
-        }).then(() => {
+            },
+        })
+        .then(() => {
             let updatedPosts = [...posts].filter(i => i.id !== id);
             setPosts(updatedPosts);
         });
     }
 
-    const create = async () => {
-        await fetch(`/api/posts/create`, {
-            method: 'POST',
+    const rejectPost = async (id) => {
+        await fetcher(`/api/posts/update/${id}/REJECTED`, {
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                    "title": "Test",
-                    "desciption": "test post",
-                    "tags": [{"tag": "test tag"}]
-                })
         })
-        .then(response => response.json())
-        .then((data) => {
-            let updatedPosts = [...posts, data]
-            setPosts(updatedPosts)
+        .then(() => {
+            let updatedPosts = [...posts].filter(i => i.id !== id);
+            setPosts(updatedPosts);
         });
     }
     
@@ -60,10 +60,11 @@ function ReviewList() {
         return <tr key={post.id}>
             <td style={{whiteSpace: 'nowrap'}}>{post.title}</td>
             <td>{post.desciption}</td>
+            <td>{post.status}</td>
             <td>
                 <ButtonGroup>
-                    <Button size="sm" color="primary" tag={Link} to={"/manager/items/" + post.id}>Approve</Button>
-                    <Button size="sm" color="danger" onClick={() => remove(post.id)}>Reject</Button>
+                    <Button size="sm" color="primary" onClick={() => approvePost(post.id)}>Approve</Button>
+                    <Button size="sm" color="danger" onClick={() => rejectPost(post.id)}>Reject</Button>
                     <Button size="sm" color="success">View Post</Button>
                 </ButtonGroup>
             </td>
@@ -72,7 +73,7 @@ function ReviewList() {
 
     return (
         <div>
-            <AppNavbar/>
+            <AppNavbar isLoggedIn={true}/>
             <Container fluid>
                 <h3>Posts In Review</h3>
                 <Table className="mt-4">
@@ -80,6 +81,7 @@ function ReviewList() {
                     <tr>
                         <th width="20%">Title</th>
                         <th width="30%">Description</th>
+                        <th width="10%">Status</th>
                         <th width="30%">Actions</th>
                     </tr>
                     </thead>

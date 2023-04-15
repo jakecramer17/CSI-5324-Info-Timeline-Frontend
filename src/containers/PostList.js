@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ButtonGroup, Container, Table } from 'reactstrap';
-import AppNavbar from './AppNavbar.js';
+import { Button, ButtonGroup, Container, Label, Table } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import AppNavbar from './AppNavbar.js';
+import fetcher from './../helpers/fetcher.js'
 
 /**
  * Basic page for fetching, displaying, and deleting posts.
@@ -12,14 +13,17 @@ function PostList() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        // TODO: Fetch endpoint needs to point to our timeline backend endpoint
         fetch('/api/posts')
             .then(response => response.json())
-            .then(data => setPosts(data));
+            .then(data => {
+                let updatedPosts = [...posts, ...data];
+                setPosts(updatedPosts);
+                console.log("All posts: " + data);
+            });
     }, []);
 
-    const remove = async (id) => {
-        await fetch(`/api/posts/remove/${id}`, {
+    const removePost = async (id) => {
+        await fetcher(`/api/posts/remove/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -30,27 +34,6 @@ function PostList() {
             setPosts(updatedPosts);
         });
     }
-
-    const create = async () => {
-        await fetch(`/api/posts/create`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                    "title": "Test",
-                    "desciption": "test post",
-                    "tags": [{"tag": "test tag"}]
-                })
-        })
-        .then(response => response.json())
-        .then((data) => {
-            let updatedPosts = [...posts, data]
-            setPosts(updatedPosts)
-        });
-    }
-    
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -63,17 +46,18 @@ function PostList() {
             <td>{post.type}</td>
             <td>{post.status}</td>
             <td>
-                <ButtonGroup>
-                    {/* <Button size="sm" color="primary" tag={Link} to={"/manager/items/" + post.id}>Edit</Button> */}
-                    <Button size="sm" color="danger" onClick={() => remove(post.id)}>Cancel</Button>
-                </ButtonGroup>
+                {post.status == 'ACCEPTED'
+                ? <Label style={{fontStyle: 'italic'}}>No Action</Label>
+                : <ButtonGroup>
+                      <Button size="sm" color="danger" onClick={() => removePost(post.id)}>Cancel</Button>
+                  </ButtonGroup>}
             </td>
         </tr>
     });
 
     return (
         <div>
-            <AppNavbar/>
+            <AppNavbar isLoggedIn={true}/>
             <Container fluid>
                 <h3>My Posts</h3>
                 <div className="float-right">
